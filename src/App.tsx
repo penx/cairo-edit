@@ -16,8 +16,8 @@ import { Canvas } from './components/Canvas';
 import { Toolbar } from './components/Toolbar';
 import clarus from './icons/clarus.json';
 
-const DEFAULT_COLOR_TOP = '#fbd558';
-const DEFAULT_COLOR_BOTTOM = '#cf4a50';
+const DEFAULT_COLOR_TOP = '#FCB900';
+const DEFAULT_COLOR_BOTTOM = '#EB144C';
 
 const save = (data: {
   bitmap: (0 | 1 | 2)[][];
