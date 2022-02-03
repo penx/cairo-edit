@@ -1,20 +1,30 @@
 {
-  "name": "pixel-art",
+  "name": "cairo-edit",
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "prettier": "prettier --check \"./src/**/*.{js,ts,tsx,json,scss}\"",
+    "prettier:fix": "prettier --write \"./src/**/*.{js,ts,tsx,json,scss}\""
   },
   "dependencies": {
+    "@modulz/design-system": "^0.6.2",
     "react": "^17.0.2",
+    "react-color": "^2.19.3",
     "react-dom": "^17.0.2"
   },
   "devDependencies": {
     "@types/react": "^17.0.33",
+    "@types/react-color": "^3.0.6",
     "@types/react-dom": "^17.0.10",
     "@vitejs/plugin-react": "^1.0.7",
+    "prettier": "^2.5.1",
     "typescript": "^4.4.4",
     "vite": "^2.7.2"
-  }
+  },
+  "main": "index.js",
+  "repository": "git@github.com:penx/cairo-edit.git",
+  "author": "Alasdair McLeay <alasdair.mcleay@me.com>",
+  "license": "MIT"
 }
