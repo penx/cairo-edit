@@ -26,6 +26,7 @@ import {
   DownloadIcon,
   Share2Icon,
   UploadIcon,
+  FilePlusIcon,
   FileIcon
 } from '@radix-ui/react-icons';
 
@@ -38,6 +39,7 @@ import { exportElementToSvg, exportDataToJson } from './utils/export';
 import { load, save } from './utils/local-storage';
 
 import clarus from './presets/clarus.json';
+import mac from './presets/mac.json';
 
 const DEFAULT_COLOR_TOP = '#FCB900';
 const DEFAULT_COLOR_BOTTOM = '#EB144C';
@@ -152,22 +154,51 @@ function App() {
                   }}
                 >
                   <Box css={{ mr: '$1' }}>
-                    <UploadIcon />
+                    <ResetIcon />
                   </Box>
-                  Load
+                  Revert
                 </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button>
+                      <Box css={{ mr: '$1' }}>
+                        <UploadIcon />
+                      </Box>
+                      Load preset
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuItem
+                      onClick={() => {
+                        setBitmap(clarus.bitmap as (0 | 1 | 2)[][]);
+                        setColorTop(DEFAULT_COLOR_TOP);
+                        setColorBottom(DEFAULT_COLOR_BOTTOM);
+                      }}
+                    >
+                      Clarus
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => {
+                        setBitmap(mac.bitmap as (0 | 1 | 2)[][]);
+                        setColorTop(DEFAULT_COLOR_TOP);
+                        setColorBottom(DEFAULT_COLOR_BOTTOM);
+                      }}
+                    >
+                      Mac
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
                 <Button
-                  title='Reset to defaults'
+                  title='New'
                   onClick={() => {
-                    setBitmap(clarus.bitmap as (0 | 1 | 2)[][]);
-                    setColorTop(DEFAULT_COLOR_TOP);
-                    setColorBottom(DEFAULT_COLOR_BOTTOM);
+                    // TODO: ask for dimensions
+                    setBitmap(new Array(38).fill(new Array(38).fill(0)));
                   }}
                 >
                   <Box css={{ mr: '$1' }}>
-                    <ResetIcon />
+                    <FilePlusIcon />
                   </Box>
-                  Reset
+                  New
                 </Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
