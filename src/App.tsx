@@ -8,8 +8,17 @@ import {
   Button,
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuTrigger
+  DropdownMenuTrigger,
+  DropdownMenuGroup,
+  DropdownMenuItem
 } from '@modulz/design-system';
+
+import {
+  Pencil1Icon,
+  TrashIcon,
+  DotIcon,
+  DotFilledIcon
+} from '@radix-ui/react-icons';
 
 import { ColorPicker } from './components/ColorPicker';
 import { ColorBox } from './components/ColorBox';
@@ -87,13 +96,24 @@ function App() {
             >
               Reset
             </Button>
-            <Button
-              onClick={() => {
-                exportElementToSvg(document.getElementById('canvas'));
-              }}
-            >
-              Export
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button>Export</Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuGroup>
+                  <DropdownMenuItem
+                    onClick={() => {
+                      exportElementToSvg(document.getElementById('canvas'));
+                    }}
+                  >
+                    SVG
+                  </DropdownMenuItem>
+                  <DropdownMenuItem disabled>JSON</DropdownMenuItem>
+                  <DropdownMenuItem disabled>PNG</DropdownMenuItem>
+                </DropdownMenuGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button>
@@ -115,6 +135,31 @@ function App() {
               </DropdownMenuTrigger>
               <DropdownMenuContent>
                 <ColorPicker color={colorBottom} onChange={setColorBottom} />
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button>
+                  <Pencil1Icon />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuGroup>
+                  <DropdownMenuItem>
+                    Toggle <Pencil1Icon />
+                  </DropdownMenuItem>
+                  <DropdownMenuItem disabled>
+                    <Box>White</Box>
+                    <DotFilledIcon />
+                  </DropdownMenuItem>
+                  <DropdownMenuItem disabled>
+                    <Box>Black</Box>
+                    <DotIcon />
+                  </DropdownMenuItem>
+                  <DropdownMenuItem disabled>
+                    Eraser <TrashIcon />
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
               </DropdownMenuContent>
             </DropdownMenu>
           </ControlGroup>
