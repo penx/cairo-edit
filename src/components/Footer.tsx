@@ -1,7 +1,7 @@
-import { Section, Paragraph, Link } from '@modulz/design-system';
+import { Paragraph, Link, Text } from '@modulz/design-system';
 
 export const Footer = () => (
-  <Section>
+  <>
     <Paragraph>
       Copyright © 2022{' '}
       <Link href='https://twitter.com/penx'>Alasdair McLeay</Link>. Based on the
@@ -17,5 +17,5 @@ export const Footer = () => (
       </Link>
       .
     </Paragraph>
-  </Section>
+  </>
 );
