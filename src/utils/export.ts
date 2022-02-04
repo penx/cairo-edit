@@ -1,3 +1,5 @@
+import Canvg, { presets } from 'canvg';
+
 export const exportElementToSvg = (el: HTMLElement | null) => {
   el?.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
   const svg = el?.outerHTML || '';
@@ -7,26 +9,40 @@ export const exportElementToSvg = (el: HTMLElement | null) => {
   });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
+  downloadUrl(url, 'moof.svg');
+};
+
+const downloadUrl = (url: string, filename: string) => {
+  const link = document.createElement('a');
+  link.download = filename;
   link.href = url;
-  link.download = 'moof.svg';
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
-};
+}
 
 export const exportDataToJson = (data: {
   bitmap: (0 | 1 | 2)[][];
   colorTop: string;
   colorBottom: string;
 }) => {
-  var url = URL.createObjectURL(
+  const url = URL.createObjectURL(
     new Blob([JSON.stringify(data)], { type: 'application/json' })
   );
 
-  const link = document.createElement('a');
-  link.download = 'moof.json';
-  link.href = url;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+  downloadUrl(url, 'moof.json');
+
+};
+
+export const exportElementToPng = async (el: HTMLElement | null, width: number, height: number) => {
+  const canvas = new window.OffscreenCanvas(width, height);
+  const ctx = canvas.getContext('2d');
+  const v = await Canvg.from(ctx, el?.outerHTML, presets.offscreen());
+
+  // Render only first frame, ignoring animations and mouse.
+  await v.render();
+
+  const blob = await canvas.convertToBlob();
+  const url = URL.createObjectURL(blob);
+  downloadUrl(url, 'moof.png');
 };

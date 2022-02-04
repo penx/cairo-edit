@@ -35,7 +35,11 @@ import { ColorBox } from './components/ColorBox';
 import { Canvas } from './components/Canvas';
 import { Footer } from './components/Footer';
 import { Help } from './components/Help';
-import { exportElementToSvg, exportDataToJson } from './utils/export';
+import {
+  exportElementToSvg,
+  exportDataToJson,
+  exportElementToPng
+} from './utils/export';
 import { load, save } from './utils/local-storage';
 
 import clarus from './presets/clarus.json';
@@ -225,7 +229,13 @@ function App() {
                       >
                         JSON
                       </DropdownMenuItem>
-                      <DropdownMenuItem disabled>PNG</DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => {
+                          exportElementToPng(document.getElementById('canvas'), bitmap[0].length * 20, bitmap.length * 20);
+                        }}
+                      >
+                        PNG
+                      </DropdownMenuItem>
                     </DropdownMenuGroup>
                   </DropdownMenuContent>
                 </DropdownMenu>
