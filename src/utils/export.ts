@@ -13,3 +13,20 @@ export const exportElementToSvg = (el: HTMLElement | null) => {
   link.click();
   document.body.removeChild(link);
 };
+
+export const exportDataToJson = (data: {
+  bitmap: (0 | 1 | 2)[][];
+  colorTop: string;
+  colorBottom: string;
+}) => {
+  var url = URL.createObjectURL(
+    new Blob([JSON.stringify(data)], { type: 'application/json' })
+  );
+
+  const link = document.createElement('a');
+  link.download = 'moof.json';
+  link.href = url;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};

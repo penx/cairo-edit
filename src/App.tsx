@@ -34,10 +34,10 @@ import { ColorBox } from './components/ColorBox';
 import { Canvas } from './components/Canvas';
 import { Footer } from './components/Footer';
 import { Help } from './components/Help';
-import { exportElementToSvg } from './utils/export';
+import { exportElementToSvg, exportDataToJson } from './utils/export';
 import { load, save } from './utils/local-storage';
 
-import clarus from './icons/clarus.json';
+import clarus from './presets/clarus.json';
 
 const DEFAULT_COLOR_TOP = '#FCB900';
 const DEFAULT_COLOR_BOTTOM = '#EB144C';
@@ -45,7 +45,7 @@ const DEFAULT_COLOR_BOTTOM = '#EB144C';
 function App() {
   const initialLoad = useMemo(() => load(), []);
   const [bitmap, setBitmap] = useState<(0 | 1 | 2)[][]>(
-    initialLoad?.bitmap || clarus
+    initialLoad?.bitmap || clarus.bitmap
   );
   const [colorTop, setColorTop] = useState<string>(
     initialLoad?.colorTop || DEFAULT_COLOR_TOP
@@ -58,11 +58,7 @@ function App() {
     <>
       <Box className={darkTheme.className}>
         <Section>
-          <Flex
-            direction='column'
-            align='center'
-            gap="6"
-          >
+          <Flex direction='column' align='center' gap='6'>
             <Canvas
               bitmap={bitmap}
               onPixelClick={(rowClicked, columnClicked) => {
@@ -79,7 +75,7 @@ function App() {
               colorTop={colorTop}
               colorBottom={colorBottom}
             />
-            <Flex align='center' direction='column' gap="2">
+            <Flex align='center' direction='column' gap='2'>
               <ControlGroup>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -161,9 +157,9 @@ function App() {
                   Load
                 </Button>
                 <Button
-                  title="Reset to defaults"
+                  title='Reset to defaults'
                   onClick={() => {
-                    setBitmap(clarus as (0 | 1 | 2)[][]);
+                    setBitmap(clarus.bitmap as (0 | 1 | 2)[][]);
                     setColorTop(DEFAULT_COLOR_TOP);
                     setColorBottom(DEFAULT_COLOR_BOTTOM);
                   }}
@@ -191,7 +187,13 @@ function App() {
                       >
                         SVG
                       </DropdownMenuItem>
-                      <DropdownMenuItem disabled>JSON</DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => {
+                          exportDataToJson({ bitmap, colorTop, colorBottom });
+                        }}
+                      >
+                        JSON
+                      </DropdownMenuItem>
                       <DropdownMenuItem disabled>PNG</DropdownMenuItem>
                     </DropdownMenuGroup>
                   </DropdownMenuContent>
