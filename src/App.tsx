@@ -34,7 +34,7 @@ import { ColorBox } from './components/ColorBox';
 import { Canvas } from './components/Canvas';
 import { Footer } from './components/Footer';
 import { Help } from './components/Help';
-import { exportElementToSvg } from './utils/svg';
+import { exportElementToSvg } from './utils/export';
 import { load, save } from './utils/local-storage';
 
 import clarus from './icons/clarus.json';
