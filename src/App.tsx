@@ -16,7 +16,6 @@ import {
   DialogContent
 } from '@modulz/design-system';
 
-import { getCssText } from '@modulz/design-system';
 import {
   Pencil1Icon,
   TrashIcon,
@@ -57,8 +56,6 @@ function App() {
 
   return (
     <>
-      <style id='stitches' dangerouslySetInnerHTML={{ __html: getCssText() }} />
-
       <Box className={darkTheme.className}>
         <Section>
           <Flex
