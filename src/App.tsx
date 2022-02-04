@@ -5,7 +5,10 @@ import {
   Section,
   Flex,
   ControlGroup,
-  Button
+  Button,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger
 } from '@modulz/design-system';
 
 import { ColorPicker } from './components/ColorPicker';
@@ -32,9 +35,6 @@ function App() {
   const [colorBottom, setColorBottom] = useState<string>(
     initialLoad?.colorBottom || DEFAULT_COLOR_BOTTOM
   );
-  const [colorPickerVisible, setColorPickerVisible] = useState<
-    false | 'top' | 'bottom'
-  >(false);
 
   return (
     <Box className={darkTheme.className}>
@@ -49,14 +49,15 @@ function App() {
           <Canvas
             bitmap={bitmap}
             onPixelClick={(rowClicked, columnClicked) => {
-              const newBitmap = bitmap.map((rowData, rowIndex) =>
-                rowData.map((columnData, columnIndex) =>
-                  columnIndex === columnClicked && rowIndex === rowClicked
-                    ? (((columnData + 1) % 3) as 0 | 1 | 2)
-                    : columnData
+              setBitmap((b) =>
+                b.map((rowData, rowIndex) =>
+                  rowData.map((columnData, columnIndex) =>
+                    columnIndex === columnClicked && rowIndex === rowClicked
+                      ? (((columnData + 1) % 3) as 0 | 1 | 2)
+                      : columnData
+                  )
                 )
               );
-              setBitmap(newBitmap);
             }}
             colorTop={colorTop}
             colorBottom={colorBottom}
@@ -93,33 +94,30 @@ function App() {
             >
               Export
             </Button>
-              <Button
-                onClick={() =>
-                  setColorPickerVisible(
-                    colorPickerVisible === 'top' ? false : 'top'
-                  )
-                }
-              >
-                <ColorBox color={colorTop} />
-                Top
-              </Button>
-              <Button
-                onClick={() =>
-                  setColorPickerVisible(
-                    colorPickerVisible === 'bottom' ? false : 'bottom'
-                  )
-                }
-              >
-                <ColorBox color={colorBottom} />
-                Bottom
-              </Button>
-            </ControlGroup>
-            {colorPickerVisible === 'top' && (
-              <ColorPicker color={colorTop} onChange={setColorTop} />
-            )}
-            {colorPickerVisible === 'bottom' && (
-              <ColorPicker color={colorBottom} onChange={setColorBottom} />
-            )}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button>
+                  <ColorBox color={colorTop} />
+                  Top
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <ColorPicker color={colorTop} onChange={setColorTop} />
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button>
+                  <ColorBox color={colorBottom} />
+                  Bottom
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <ColorPicker color={colorBottom} onChange={setColorBottom} />
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </ControlGroup>
         </Flex>
       </Section>
       <Help />

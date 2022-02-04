@@ -1,15 +1,29 @@
 import { TwitterPicker } from 'react-color';
+import { Box } from '@modulz/design-system';
 
 export const ColorPicker = ({
-    color,
-    onChange
+  color,
+  onChange
 }: {
-    color: string;
-    onChange: (color: string) => void;
+  color: string;
+  onChange: (color: string) => void;
 }) => (
-  <TwitterPicker
-    color={color}
-    triangle='hide'
-    onChangeComplete={({ hex }: { hex: string }) => onChange(hex)}
-  />
+  <Box>
+    <TwitterPicker
+      styles={{
+        default: {
+          card: {
+            boxShadow: 'none',
+            background: 'none',
+          },
+          input: {
+            color: 'inherit',
+          }
+        }
+      }}
+      color={color}
+      triangle='hide'
+      onChangeComplete={({ hex }: { hex: string }) => onChange(hex)}
+    />
+  </Box>
 );
