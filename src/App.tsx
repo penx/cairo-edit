@@ -175,8 +175,6 @@ function App() {
                     <DropdownMenuItem
                       onClick={() => {
                         setBitmap(clarus.bitmap as (0 | 1 | 2)[][]);
-                        setColorTop(DEFAULT_COLOR_TOP);
-                        setColorBottom(DEFAULT_COLOR_BOTTOM);
                       }}
                     >
                       Clarus
@@ -184,8 +182,6 @@ function App() {
                     <DropdownMenuItem
                       onClick={() => {
                         setBitmap(mac.bitmap as (0 | 1 | 2)[][]);
-                        setColorTop(DEFAULT_COLOR_TOP);
-                        setColorBottom(DEFAULT_COLOR_BOTTOM);
                       }}
                     >
                       Mac
@@ -217,6 +213,13 @@ function App() {
                     <DropdownMenuGroup>
                       <DropdownMenuItem
                         onClick={() => {
+                          exportElementToPng(document.getElementById('canvas'), bitmap[0].length * 20, bitmap.length * 20);
+                        }}
+                      >
+                        PNG
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => {
                           exportElementToSvg(document.getElementById('canvas'));
                         }}
                       >
@@ -228,13 +231,6 @@ function App() {
                         }}
                       >
                         JSON
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => {
-                          exportElementToPng(document.getElementById('canvas'), bitmap[0].length * 20, bitmap.length * 20);
-                        }}
-                      >
-                        PNG
                       </DropdownMenuItem>
                     </DropdownMenuGroup>
                   </DropdownMenuContent>

@@ -19,7 +19,7 @@ const downloadUrl = (url: string, filename: string) => {
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
-}
+};
 
 export const exportDataToJson = (data: {
   bitmap: (0 | 1 | 2)[][];
@@ -31,13 +31,21 @@ export const exportDataToJson = (data: {
   );
 
   downloadUrl(url, 'moof.json');
-
 };
 
-export const exportElementToPng = async (el: HTMLElement | null, width: number, height: number) => {
+export const exportElementToPng = async (
+  el: HTMLElement | null,
+  width: number,
+  height: number
+) => {
+  if (!el || !window.OffscreenCanvas) return; // TODO: handle error or change types
   const canvas = new window.OffscreenCanvas(width, height);
   const ctx = canvas.getContext('2d');
-  const v = await Canvg.from(ctx, el?.outerHTML, presets.offscreen());
+  if (!ctx) return; // I don't think this should ever be hit, but need it in order to satify TypeScript
+  const v = await Canvg.from(ctx, el.outerHTML, {
+    ...presets.offscreen(),
+    window: undefined
+  });
 
   // Render only first frame, ignoring animations and mouse.
   await v.render();
