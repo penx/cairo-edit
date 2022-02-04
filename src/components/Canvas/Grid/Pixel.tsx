@@ -1,3 +1,5 @@
+import React from 'react'
+
 import { styled } from '@modulz/design-system';
 
 const Rect = styled('rect', {
@@ -6,14 +8,16 @@ const Rect = styled('rect', {
   }
 });
 
-export const Pixel = ({
+export const Pixel = React.memo(({
   value,
-  onClick,
+  onMouseDown,
+  onPixelMouseOver,
   rowIndex,
   columnIndex
 }: {
   value: 0 | 1 | 2;
-  onClick: React.MouseEventHandler;
+  onMouseDown: React.MouseEventHandler;
+  onPixelMouseOver?: React.MouseEventHandler;
   rowIndex: number;
   columnIndex: number;
 }) => {
@@ -21,7 +25,8 @@ export const Pixel = ({
     <>
       <Rect
         fill={value === 1 ? 'black' : value === 2 ? 'white' : 'transparent'}
-        onClick={onClick}
+        onMouseDown={onMouseDown}
+        onMouseOver={onPixelMouseOver}
         strokeWidth={2}
         stroke={value === 1 ? 'black' : value === 2 ? 'white' : 'transparent'}
         width={18}
@@ -31,4 +36,4 @@ export const Pixel = ({
       />
     </>
   );
-};
+});

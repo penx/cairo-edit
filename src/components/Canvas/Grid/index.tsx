@@ -3,30 +3,55 @@ import React from 'react';
 
 export const Grid = ({
   bitmap,
-  onPixelClick
+  onPixelMouseDown,
+  onPixelMouseOver
 }: {
   bitmap: (0 | 1 | 2)[][];
-  onPixelClick: (rowClicked: number, columnClicked: number) => void;
+  onPixelMouseDown: (rowClicked: number, columnClicked: number) => void;
+  onPixelMouseOver?: (rowClicked: number, columnClicked: number) => void;
 }) => {
   return (
     <>
       {bitmap.map((rowData, rowIndex) => {
         return (
-          <React.Fragment key={rowIndex}>
-            {rowData.map((columnData, columnIndex) => (
-              <Pixel
-                key={columnIndex}
-                value={columnData}
-                columnIndex={columnIndex}
-                rowIndex={rowIndex}
-                onClick={() => {
-                  onPixelClick(rowIndex, columnIndex);
-                }}
-              />
-            ))}
-          </React.Fragment>
+          <Row
+            rowData={rowData}
+            rowIndex={rowIndex}
+            key={rowIndex}
+            onPixelMouseDown={onPixelMouseDown}
+            onPixelMouseOver={onPixelMouseOver}
+          />
         );
       })}
     </>
   );
 };
+
+const Row =  React.memo(({
+  rowData,
+  rowIndex,
+  onPixelMouseDown,
+  onPixelMouseOver
+}: {
+  rowIndex: number;
+  rowData: (0 | 1 | 2)[];
+  onPixelMouseDown: (rowClicked: number, columnClicked: number) => void;
+  onPixelMouseOver?: (rowClicked: number, columnClicked: number) => void;
+}) => (
+  <React.Fragment key={rowIndex}>
+    {rowData.map((columnData, columnIndex) => (
+      <Pixel
+        key={columnIndex}
+        value={columnData}
+        columnIndex={columnIndex}
+        rowIndex={rowIndex}
+        onMouseDown={() => {
+          onPixelMouseDown(rowIndex, columnIndex);
+        }}
+        onPixelMouseOver={onPixelMouseOver ? () => {
+          onPixelMouseOver(rowIndex, columnIndex);
+        }: undefined}
+      />
+    ))}
+  </React.Fragment>
+));

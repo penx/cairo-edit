@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import {
   darkTheme,
   Box,
@@ -59,6 +59,41 @@ function App() {
   const [colorBottom, setColorBottom] = useState<string>(
     initialLoad?.colorBottom || DEFAULT_COLOR_BOTTOM
   );
+  const [writeValue, setWriteValue] = useState<0 | 1 | 2 | null>(0);
+
+  const handleMouseDown = useCallback((rowClicked, columnClicked) => {
+    setBitmap((b) => {
+      const currentValue = b[rowClicked][columnClicked];
+      const newWriteValue = ((currentValue + 1) % 3) as 0 | 1 | 2;
+      setWriteValue(newWriteValue);
+      return b.map((rowData, rowIndex) =>
+        rowClicked !== rowIndex
+          ? rowData
+          : rowData.map((columnData, columnIndex) =>
+              columnIndex === columnClicked ? newWriteValue : columnData
+            )
+      );
+    });
+  }, []);
+
+  const handleMouseOver = useCallback(
+    (rowClicked, columnClicked) => {
+      if (writeValue != null) {
+        setBitmap((b) =>
+          b.map((rowData, rowIndex) =>
+            rowClicked !== rowIndex
+              ? rowData
+              : rowData.map((columnData, columnIndex) =>
+                  columnIndex === columnClicked ? writeValue : columnData
+                )
+          )
+        );
+      }
+    },
+    [writeValue]
+  );
+
+  const clearWriteValue = useCallback(() => {setWriteValue(null)}, []);
 
   return (
     <>
@@ -67,17 +102,10 @@ function App() {
           <Flex direction='column' align='center' gap='6'>
             <Canvas
               bitmap={bitmap}
-              onPixelClick={(rowClicked, columnClicked) => {
-                setBitmap((b) =>
-                  b.map((rowData, rowIndex) =>
-                    rowData.map((columnData, columnIndex) =>
-                      columnIndex === columnClicked && rowIndex === rowClicked
-                        ? (((columnData + 1) % 3) as 0 | 1 | 2)
-                        : columnData
-                    )
-                  )
-                );
-              }}
+              onPixelMouseDown={handleMouseDown}
+              onPixelMouseOver={writeValue != null ? handleMouseOver : undefined}
+              onMouseUp={clearWriteValue}
+              onMouseLeave={clearWriteValue}
               colorTop={colorTop}
               colorBottom={colorBottom}
             />
@@ -213,7 +241,11 @@ function App() {
                     <DropdownMenuGroup>
                       <DropdownMenuItem
                         onClick={() => {
-                          exportElementToPng(document.getElementById('canvas'), bitmap[0].length * 20, bitmap.length * 20);
+                          exportElementToPng(
+                            document.getElementById('canvas'),
+                            bitmap[0].length * 20,
+                            bitmap.length * 20
+                          );
                         }}
                       >
                         PNG

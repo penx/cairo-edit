@@ -4,12 +4,18 @@ import { Grid } from './Grid';
 
 export const Canvas = ({
   bitmap,
-  onPixelClick,
+  onPixelMouseDown,
+  onPixelMouseOver,
+  onMouseUp,
+  onMouseLeave,
   colorTop,
   colorBottom
 }: {
   bitmap: (0 | 1 | 2)[][];
-  onPixelClick: (rowClicked: number, columnClicked: number) => void;
+  onPixelMouseDown: (rowClicked: number, columnClicked: number) => void;
+  onPixelMouseOver?: (rowClicked: number, columnClicked: number) => void;
+  onMouseUp: React.MouseEventHandler,
+  onMouseLeave: React.MouseEventHandler,
   colorTop: string;
   colorBottom: string;
 }) => (
@@ -17,6 +23,8 @@ export const Canvas = ({
     id='canvas'
     viewBox={`0 0 ${bitmap[0].length * 20} ${bitmap.length * 20}`}
     shapeRendering='crispEdges'
+    onMouseUp={onMouseUp}
+    onMouseLeave={onMouseLeave}
   >
     <defs>
       <linearGradient id='background' x1='0' x2='0' y1='0' y2='1'>
@@ -29,7 +37,7 @@ export const Canvas = ({
       height={bitmap.length * 20}
       fill='url(#background)'
     />
-    <Grid bitmap={bitmap} onPixelClick={onPixelClick} />
+    <Grid bitmap={bitmap} onPixelMouseDown={onPixelMouseDown} onPixelMouseOver={onPixelMouseOver} />
   </Svg>
 );
 
