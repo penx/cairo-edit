@@ -31,8 +31,8 @@ export const Pixel = React.memo(({
         stroke={value === 1 ? 'black' : value === 2 ? 'white' : 'transparent'}
         width={18}
         height={18}
-        x={columnIndex * 20}
-        y={rowIndex * 20}
+        x={columnIndex * 20 + 1}
+        y={rowIndex * 20 + 1}
       />
     </>
   );
