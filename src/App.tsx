@@ -4,38 +4,23 @@ import {
   Box,
   Section,
   Flex,
-  Paragraph,
-  Link,
   ControlGroup,
-  Button,
-  Heading
+  Button
 } from '@modulz/design-system';
-import { TwitterPicker } from 'react-color';
 
+import { ColorPicker } from './components/ColorPicker';
+import { ColorBox } from './components/ColorBox';
 import { Canvas } from './components/Canvas';
 import { Toolbar } from './components/Toolbar';
+import { Footer } from './components/Footer';
+import { Help } from './components/Help';
+import { exportElementToSvg } from './utils/svg';
+import { load, save } from './utils/local-storage';
+
 import clarus from './icons/clarus.json';
 
 const DEFAULT_COLOR_TOP = '#FCB900';
 const DEFAULT_COLOR_BOTTOM = '#EB144C';
-
-const save = (data: {
-  bitmap: (0 | 1 | 2)[][];
-  colorTop?: string;
-  colorBottom?: string;
-}) => {
-  localStorage.setItem('moof', JSON.stringify(data));
-};
-
-const load = () => {
-  try {
-    const initialLoad = localStorage.getItem('moof');
-    return initialLoad ? JSON.parse(initialLoad) : null;
-  } catch (e) {
-    console.error(e);
-    return null;
-  }
-};
 
 function App() {
   const initialLoad = useMemo(() => load(), []);
@@ -51,6 +36,7 @@ function App() {
   const [colorPickerVisible, setColorPickerVisible] = useState<
     false | 'top' | 'bottom'
   >(false);
+  
   return (
     <Box className={darkTheme.className}>
       <Section>
@@ -91,21 +77,7 @@ function App() {
               setColorBottom(DEFAULT_COLOR_BOTTOM);
             }}
             onExportClick={() => {
-              const el = document.getElementById('canvas');
-              el?.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-              const svg = el?.outerHTML || '';
-
-              const blob = new Blob(
-                ['<?xml version="1.0" standalone="no"?>\r\n', svg],
-                { type: 'image/svg+xml;charset=utf-8' }
-              );
-              const url = URL.createObjectURL(blob);
-              const link = document.createElement('a');
-              link.href = url;
-              link.download = 'moof.svg';
-              document.body.appendChild(link);
-              link.click();
-              document.body.removeChild(link);
+              exportElementToSvg(document.getElementById('canvas'));
             }}
           />
           <ControlGroup>
@@ -116,14 +88,7 @@ function App() {
                 )
               }
             >
-              <Box
-                css={{
-                  mr: '$1',
-                  backgroundColor: colorTop,
-                  width: '$2',
-                  height: '$2'
-                }}
-              />
+              <ColorBox color={colorTop} />
               Top
             </Button>
             <Button
@@ -133,57 +98,22 @@ function App() {
                 )
               }
             >
-              <Box
-                css={{
-                  mr: '$1',
-                  backgroundColor: colorBottom,
-                  width: '$2',
-                  height: '$2'
-                }}
-              />
+              <ColorBox color={colorBottom} />
               Bottom
             </Button>
           </ControlGroup>
-          {colorPickerVisible === 'top' && (
-            <TwitterPicker
-              color={colorTop}
-              triangle='hide'
-              onChangeComplete={({ hex }: { hex: string }) => setColorTop(hex)}
-            />
-          )}
-          {colorPickerVisible === 'bottom' && (
-            <TwitterPicker
-              color={colorBottom}
-              triangle='hide'
-              onChangeComplete={({ hex }: { hex: string }) =>
-                setColorBottom(hex)
-              }
-            />
-          )}
+          <>
+            {colorPickerVisible === 'top' && (
+              <ColorPicker color={colorTop} onChange={setColorTop} />
+            )}
+            {colorPickerVisible === 'bottom' && (
+              <ColorPicker color={colorBottom} onChange={setColorBottom} />
+            )}
+          </>
         </Flex>
       </Section>
-      <Section>
-        <Paragraph>
-          Click image to toggle pixels between black, white and transparent.
-        </Paragraph>
-      </Section>
-      <Section>
-        <Paragraph>
-          Copyright © 2022{' '}
-          <Link href='https://twitter.com/penx'>Alasdair McLeay</Link>. Based on
-          the work of{' '}
-          <Link href='https://twitter.com/susankare'>Susan Kare</Link>.
-        </Paragraph>
-        <Paragraph>
-          Order prints at{' '}
-          <Link href='https://kareprints.com'>kareprints.com</Link>.
-        </Paragraph>
-        <Paragraph>
-          Source code available at{' '}
-          <Link href='https://github.com/penx/cairo-edit'>github.com/penx/cairo-edit</Link>.
-        </Paragraph>
-        
-      </Section>
+      <Help />
+      <Footer />
     </Box>
   );
 }
