@@ -15,7 +15,7 @@ export const Canvas = ({
 }) => (
   <Svg
     id='canvas'
-    viewBox={`0 0 ${bitmap.length * 20} ${bitmap[0].length * 20}`}
+    viewBox={`0 0 ${bitmap[0].length * 20} ${bitmap.length * 20}`}
     shapeRendering='crispEdges'
   >
     <defs>
@@ -25,8 +25,8 @@ export const Canvas = ({
       </linearGradient>
     </defs>
     <rect
-      width={bitmap.length * 20}
-      height={bitmap[0].length * 20}
+      width={bitmap[0].length * 20}
+      height={bitmap.length * 20}
       fill='url(#background)'
     />
     <Grid bitmap={bitmap} onPixelClick={onPixelClick} />
