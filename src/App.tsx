@@ -11,7 +11,6 @@ import {
 import { ColorPicker } from './components/ColorPicker';
 import { ColorBox } from './components/ColorBox';
 import { Canvas } from './components/Canvas';
-import { Toolbar } from './components/Toolbar';
 import { Footer } from './components/Footer';
 import { Help } from './components/Help';
 import { exportElementToSvg } from './utils/svg';
@@ -36,7 +35,7 @@ function App() {
   const [colorPickerVisible, setColorPickerVisible] = useState<
     false | 'top' | 'bottom'
   >(false);
-  
+
   return (
     <Box className={darkTheme.className}>
       <Section>
@@ -62,54 +61,65 @@ function App() {
             colorTop={colorTop}
             colorBottom={colorBottom}
           />
-          <Toolbar
-            // TODO: load/save should open dialogs or similar
-            onSaveClick={() => save({ bitmap, colorTop, colorBottom })}
-            onLoadClick={() => {
-              const loadedData = load();
-              loadedData?.bitmap && setBitmap(loadedData.bitmap);
-              loadedData?.colorTop && setColorTop(loadedData.colorTop);
-              loadedData?.colorBottom && setColorBottom(loadedData.colorBottom);
-            }}
-            onResetClick={() => {
-              setBitmap(clarus as (0 | 1 | 2)[][]);
-              setColorTop(DEFAULT_COLOR_TOP);
-              setColorBottom(DEFAULT_COLOR_BOTTOM);
-            }}
-            onExportClick={() => {
-              exportElementToSvg(document.getElementById('canvas'));
-            }}
-          />
           <ControlGroup>
-            <Button
-              onClick={() =>
-                setColorPickerVisible(
-                  colorPickerVisible === 'top' ? false : 'top'
-                )
-              }
-            >
-              <ColorBox color={colorTop} />
-              Top
+            {/* TODO: load/save should open dialogs or similar */}
+            <Button onClick={() => save({ bitmap, colorTop, colorBottom })}>
+              Save
             </Button>
             <Button
-              onClick={() =>
-                setColorPickerVisible(
-                  colorPickerVisible === 'bottom' ? false : 'bottom'
-                )
-              }
+              onClick={() => {
+                const loadedData = load();
+                loadedData?.bitmap && setBitmap(loadedData.bitmap);
+                loadedData?.colorTop && setColorTop(loadedData.colorTop);
+                loadedData?.colorBottom &&
+                  setColorBottom(loadedData.colorBottom);
+              }}
             >
-              <ColorBox color={colorBottom} />
-              Bottom
+              Load
             </Button>
-          </ControlGroup>
-          <>
+            <Button
+              onClick={() => {
+                setBitmap(clarus as (0 | 1 | 2)[][]);
+                setColorTop(DEFAULT_COLOR_TOP);
+                setColorBottom(DEFAULT_COLOR_BOTTOM);
+              }}
+            >
+              Reset
+            </Button>
+            <Button
+              onClick={() => {
+                exportElementToSvg(document.getElementById('canvas'));
+              }}
+            >
+              Export
+            </Button>
+              <Button
+                onClick={() =>
+                  setColorPickerVisible(
+                    colorPickerVisible === 'top' ? false : 'top'
+                  )
+                }
+              >
+                <ColorBox color={colorTop} />
+                Top
+              </Button>
+              <Button
+                onClick={() =>
+                  setColorPickerVisible(
+                    colorPickerVisible === 'bottom' ? false : 'bottom'
+                  )
+                }
+              >
+                <ColorBox color={colorBottom} />
+                Bottom
+              </Button>
+            </ControlGroup>
             {colorPickerVisible === 'top' && (
               <ColorPicker color={colorTop} onChange={setColorTop} />
             )}
             {colorPickerVisible === 'bottom' && (
               <ColorPicker color={colorBottom} onChange={setColorBottom} />
             )}
-          </>
         </Flex>
       </Section>
       <Help />
