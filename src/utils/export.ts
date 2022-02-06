@@ -1,5 +1,3 @@
-import Canvg, { presets } from 'canvg';
-
 export const exportElementToSvg = (el: HTMLElement | null) => {
   el?.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
   const svg = el?.outerHTML || '';
@@ -38,6 +36,10 @@ export const exportElementToPng = async (
   width: number,
   height: number
 ) => {
+  const mod = await import('canvg');
+  const Canvg = mod.default;
+  const presets = mod.presets;
+
   if (!el || !window.OffscreenCanvas) return; // TODO: handle error or change types
   const canvas = new window.OffscreenCanvas(width, height);
   const ctx = canvas.getContext('2d');

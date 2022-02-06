@@ -4,7 +4,7 @@ import { styled } from '@modulz/design-system';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Center, GradientTexture } from '@react-three/drei';
 
-export const Canvas3D = ({
+const Canvas3D = ({
   bitmap,
   colorTop,
   colorBottom
@@ -17,7 +17,9 @@ export const Canvas3D = ({
   const xOffset = bitmap[0].length / 2;
 
   return (
-    <Wrapper>
+    <Wrapper css={{
+      background: `linear-gradient(180deg, ${colorTop} 0%, ${colorBottom} 100%)`
+    }}>
       <Canvas
         dpr={window.devicePixelRatio}
         camera={{ position: [0, 0, yOffset * 1.33] }}
@@ -104,5 +106,7 @@ const Wrapper = styled('div', {
   maxWidth: '90vw',
   maxHeight: '60vh',
   width: 'min(60vh, 90vw)',
-  height: 'min(60vh, 90vw)'
+  height: 'min(60vh, 90vw)',
 });
+
+export default Canvas3D;

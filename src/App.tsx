@@ -1,5 +1,6 @@
-import { useState, useMemo, useCallback } from 'react';
+import React, { Suspense, useState, useMemo, useCallback } from 'react';
 import {
+  styled,
   darkTheme,
   Box,
   Section,
@@ -37,7 +38,6 @@ import {
 import { ColorPicker } from './components/ColorPicker';
 import { ColorBox } from './components/ColorBox';
 import { Canvas } from './components/Canvas';
-import { Canvas3D } from './components/Canvas3D';
 import { Footer } from './components/Footer';
 import { Help } from './components/Help';
 import {
@@ -52,6 +52,15 @@ import mac from './presets/mac.json';
 
 const DEFAULT_COLOR_TOP = '#FCB900';
 const DEFAULT_COLOR_BOTTOM = '#EB144C';
+
+const Canvas3D = React.lazy(() => import('./components/Canvas3D'));
+
+const CanvasPlaceholder = styled('div', {
+  maxWidth: '90vw',
+  maxHeight: '60vh',
+  width: 'min(60vh, 90vw)',
+  height: 'min(60vh, 90vw)'
+});
 
 function App() {
   const initialLoad = useMemo(() => load(), []);
@@ -107,7 +116,7 @@ function App() {
       <Box className={darkTheme.className}>
         <Section>
           <Flex direction='column' align='center' gap='6'>
-            <Tabs defaultValue='2D' >
+            <Tabs defaultValue='2D'>
               <TabsList>
                 <TabsTrigger value='2D'>2D</TabsTrigger>
                 <TabsTrigger value='3D'>3D</TabsTrigger>
@@ -126,11 +135,21 @@ function App() {
                 />
               </TabsContent>
               <TabsContent value='3D'>
-                <Canvas3D
-                  bitmap={bitmap}
-                  colorTop={colorTop}
-                  colorBottom={colorBottom}
-                />
+                <Suspense
+                  fallback={
+                    <CanvasPlaceholder
+                      css={{
+                        background: `linear-gradient(180deg, ${colorTop} 0%, ${colorBottom} 100%)`
+                      }}
+                    />
+                  }
+                >
+                  <Canvas3D
+                    bitmap={bitmap}
+                    colorTop={colorTop}
+                    colorBottom={colorBottom}
+                  />
+                </Suspense>
               </TabsContent>
             </Tabs>
             <Flex align='center' direction='column' gap='2'>
