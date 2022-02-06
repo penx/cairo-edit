@@ -3,16 +3,15 @@ import React from 'react';
 import { styled } from '@modulz/design-system';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Center, GradientTexture } from '@react-three/drei';
+import { useRecoilValue } from 'recoil';
 
-const Canvas3D = ({
-  bitmap,
-  colorTop,
-  colorBottom
-}: {
-  bitmap: (0 | 1 | 2)[][];
-  colorTop: string;
-  colorBottom: string;
-}) => {
+import { bitmapState, colorBottomState, colorTopState } from '../../recoil/canvas/atom';
+
+const Canvas3D = () => {
+  const bitmap = useRecoilValue(bitmapState);
+  const colorTop = useRecoilValue(colorTopState);
+  const colorBottom = useRecoilValue(colorBottomState);
+
   const yOffset = bitmap.length / 2;
   const xOffset = bitmap[0].length / 2;
 

@@ -10,13 +10,10 @@ import {
   TabsContent,
   TabsTrigger
 } from '@modulz/design-system';
-
 import { useRecoilValue } from 'recoil';
 
 import { Canvas } from './components/Canvas';
-
 import {
-  bitmapState,
   colorTopState,
   colorBottomState
 } from './recoil/canvas/atom';
@@ -32,7 +29,6 @@ const CanvasPlaceholder = styled('div', {
 });
 
 function App() {
-  const bitmap = useRecoilValue(bitmapState);
   const colorTop = useRecoilValue(colorTopState);
   const colorBottom = useRecoilValue(colorBottomState);
 
@@ -59,11 +55,7 @@ function App() {
                     />
                   }
                 >
-                  <Canvas3D
-                    bitmap={bitmap}
-                    colorTop={colorTop}
-                    colorBottom={colorBottom}
-                  />
+                  <Canvas3D />
                 </Suspense>
               </TabsContent>
             </Tabs>
