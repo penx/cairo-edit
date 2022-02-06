@@ -1,32 +1,60 @@
 import { styled } from '@modulz/design-system';
-import { useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 
 import { Grid } from './Grid';
-import { bitmapState } from '../../recoil/canvas/atom';
+import { bitmapState, colorBottomState, colorTopState, writeValueState } from '../../recoil/canvas/atom';
+import { useCallback } from 'react';
 
-export const Canvas = ({
-  onPixelMouseDown,
-  onPixelMouseOver,
-  onMouseUp,
-  onMouseLeave,
-  colorTop,
-  colorBottom
-}: {
-  onPixelMouseDown: (rowClicked: number, columnClicked: number) => void;
-  onPixelMouseOver?: (rowClicked: number, columnClicked: number) => void;
-  onMouseUp: React.MouseEventHandler;
-  onMouseLeave: React.MouseEventHandler;
-  colorTop: string;
-  colorBottom: string;
-}) => {
-  const bitmap = useRecoilValue(bitmapState);
+export const Canvas = () => {
+  const [bitmap, setBitmap] = useRecoilState(bitmapState);
+  const colorTop = useRecoilValue(colorTopState);
+  const colorBottom = useRecoilValue(colorBottomState);
+  const [writeValue, setWriteValue] = useRecoilState(writeValueState);
+
+
+  const handleMouseDown = useCallback((rowClicked, columnClicked) => {
+    setBitmap((b) => {
+      const currentValue = b[rowClicked][columnClicked];
+      const newWriteValue = ((currentValue + 1) % 3) as 0 | 1 | 2;
+      setWriteValue(newWriteValue);
+      return b.map((rowData, rowIndex) =>
+        rowClicked !== rowIndex
+          ? rowData
+          : rowData.map((columnData, columnIndex) =>
+              columnIndex === columnClicked ? newWriteValue : columnData
+            )
+      );
+    });
+  }, []);
+
+  const handleMouseOver = useCallback(
+    (rowClicked, columnClicked) => {
+      if (writeValue != null) {
+        setBitmap((b) =>
+          b.map((rowData, rowIndex) =>
+            rowClicked !== rowIndex
+              ? rowData
+              : rowData.map((columnData, columnIndex) =>
+                  columnIndex === columnClicked ? writeValue : columnData
+                )
+          )
+        );
+      }
+    },
+    [writeValue]
+  );
+
+  const clearWriteValue = useCallback(() => {
+    setWriteValue(null);
+  }, []);
+
   return (
     <Svg
       id='canvas'
       viewBox={`0 0 ${bitmap[0].length * 20} ${bitmap.length * 20}`}
       shapeRendering='crispEdges'
-      onMouseUp={onMouseUp}
-      onMouseLeave={onMouseLeave}
+      onMouseUp={clearWriteValue}
+      onMouseLeave={clearWriteValue}
     >
       <defs>
         <linearGradient id='background' x1='0' x2='0' y1='0' y2='1'>
@@ -41,8 +69,8 @@ export const Canvas = ({
       />
       <Grid
         bitmap={bitmap}
-        onPixelMouseDown={onPixelMouseDown}
-        onPixelMouseOver={onPixelMouseOver}
+        onPixelMouseDown={handleMouseDown}
+        onPixelMouseOver={handleMouseOver}
       />
     </Svg>
   );

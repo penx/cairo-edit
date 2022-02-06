@@ -1,62 +1,26 @@
-import React, { Suspense, useCallback } from 'react';
+import React, { Suspense } from 'react';
 import {
   styled,
   darkTheme,
   Box,
   Section,
   Flex,
-  ControlGroup,
-  Button,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  Dialog,
-  DialogTrigger,
-  DialogContent,
   Tabs,
   TabsList,
   TabsContent,
   TabsTrigger
 } from '@modulz/design-system';
 
-import {
-  Pencil1Icon,
-  TrashIcon,
-  DotIcon,
-  DotFilledIcon,
-  QuestionMarkCircledIcon,
-  ResetIcon,
-  DownloadIcon,
-  Share2Icon,
-  UploadIcon,
-  FilePlusIcon,
-  FileIcon
-} from '@radix-ui/react-icons';
+import { useRecoilValue } from 'recoil';
 
-import { useRecoilState } from 'recoil';
-
-import { ColorPicker } from './components/ColorPicker';
-import { ColorBox } from './components/ColorBox';
 import { Canvas } from './components/Canvas';
-import { Footer } from './components/Footer';
-import { Help } from './components/Help';
-import {
-  exportElementToSvg,
-  exportDataToJson,
-  exportElementToPng
-} from './utils/export';
-import { load, save } from './utils/local-storage';
 
-import clarus from './presets/clarus.json';
-import mac from './presets/mac.json';
 import {
   bitmapState,
   colorTopState,
-  colorBottomState,
-  writeValueState
+  colorBottomState
 } from './recoil/canvas/atom';
+import { Toolbar } from './components/Toolbar';
 
 const Canvas3D = React.lazy(() => import('./components/Canvas3D'));
 
@@ -68,46 +32,9 @@ const CanvasPlaceholder = styled('div', {
 });
 
 function App() {
-  const [bitmap, setBitmap] = useRecoilState(bitmapState);
-  const [colorTop, setColorTop] = useRecoilState(colorTopState);
-  const [colorBottom, setColorBottom] = useRecoilState(colorBottomState);
-  const [writeValue, setWriteValue] = useRecoilState(writeValueState);
-
-  const handleMouseDown = useCallback((rowClicked, columnClicked) => {
-    setBitmap((b) => {
-      const currentValue = b[rowClicked][columnClicked];
-      const newWriteValue = ((currentValue + 1) % 3) as 0 | 1 | 2;
-      setWriteValue(newWriteValue);
-      return b.map((rowData, rowIndex) =>
-        rowClicked !== rowIndex
-          ? rowData
-          : rowData.map((columnData, columnIndex) =>
-              columnIndex === columnClicked ? newWriteValue : columnData
-            )
-      );
-    });
-  }, []);
-
-  const handleMouseOver = useCallback(
-    (rowClicked, columnClicked) => {
-      if (writeValue != null) {
-        setBitmap((b) =>
-          b.map((rowData, rowIndex) =>
-            rowClicked !== rowIndex
-              ? rowData
-              : rowData.map((columnData, columnIndex) =>
-                  columnIndex === columnClicked ? writeValue : columnData
-                )
-          )
-        );
-      }
-    },
-    [writeValue]
-  );
-
-  const clearWriteValue = useCallback(() => {
-    setWriteValue(null);
-  }, []);
+  const bitmap = useRecoilValue(bitmapState);
+  const colorTop = useRecoilValue(colorTopState);
+  const colorBottom = useRecoilValue(colorBottomState);
 
   return (
     <>
@@ -120,16 +47,7 @@ function App() {
                 <TabsTrigger value='3D'>3D</TabsTrigger>
               </TabsList>
               <TabsContent value='2D'>
-                <Canvas
-                  onPixelMouseDown={handleMouseDown}
-                  onPixelMouseOver={
-                    writeValue != null ? handleMouseOver : undefined
-                  }
-                  onMouseUp={clearWriteValue}
-                  onMouseLeave={clearWriteValue}
-                  colorTop={colorTop}
-                  colorBottom={colorBottom}
-                />
+                <Canvas />
               </TabsContent>
               <TabsContent value='3D'>
                 <Suspense
@@ -149,190 +67,7 @@ function App() {
                 </Suspense>
               </TabsContent>
             </Tabs>
-            <Flex align='center' direction='column' gap='2'>
-              <ControlGroup>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button>
-                      <ColorBox color={colorTop} />
-                      Top
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <ColorPicker color={colorTop} onChange={setColorTop} />
-                  </DropdownMenuContent>
-                </DropdownMenu>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button>
-                      <ColorBox color={colorBottom} />
-                      Bottom
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <ColorPicker
-                      color={colorBottom}
-                      onChange={setColorBottom}
-                    />
-                  </DropdownMenuContent>
-                </DropdownMenu>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button>
-                      <Box css={{ mr: '$1' }}>
-                        <Pencil1Icon />
-                      </Box>
-                      Toggle
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <DropdownMenuGroup>
-                      <DropdownMenuItem>
-                        Toggle <Pencil1Icon />
-                      </DropdownMenuItem>
-                      <DropdownMenuItem disabled>
-                        White <DotFilledIcon />
-                      </DropdownMenuItem>
-                      <DropdownMenuItem disabled>
-                        Black <DotIcon />
-                      </DropdownMenuItem>
-                      <DropdownMenuItem disabled>
-                        Eraser <TrashIcon />
-                      </DropdownMenuItem>
-                    </DropdownMenuGroup>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </ControlGroup>
-
-              <ControlGroup>
-                {/* TODO: load/save should open dialogs or similar */}
-                <Button
-                  title="Save to your browser's local storage"
-                  onClick={() => save({ bitmap, colorTop, colorBottom })}
-                >
-                  <Box css={{ mr: '$1' }}>
-                    <DownloadIcon />
-                  </Box>
-                  Save
-                </Button>
-                <Button
-                  title="Load from your browser's local storage"
-                  onClick={() => {
-                    const loadedData = load();
-                    loadedData?.bitmap && setBitmap(loadedData.bitmap);
-                    loadedData?.colorTop && setColorTop(loadedData.colorTop);
-                    loadedData?.colorBottom &&
-                      setColorBottom(loadedData.colorBottom);
-                  }}
-                >
-                  <Box css={{ mr: '$1' }}>
-                    <ResetIcon />
-                  </Box>
-                  Revert
-                </Button>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button>
-                      <Box css={{ mr: '$1' }}>
-                        <UploadIcon />
-                      </Box>
-                      Load preset
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <DropdownMenuItem
-                      onClick={() => {
-                        setBitmap(clarus.bitmap as (0 | 1 | 2)[][]);
-                      }}
-                    >
-                      Clarus
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => {
-                        setBitmap(mac.bitmap as (0 | 1 | 2)[][]);
-                      }}
-                    >
-                      Mac
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-                <Button
-                  title='New'
-                  onClick={() => {
-                    // TODO: ask for dimensions
-                    setBitmap(new Array(38).fill(new Array(38).fill(0)));
-                  }}
-                >
-                  <Box css={{ mr: '$1' }}>
-                    <FilePlusIcon />
-                  </Box>
-                  New
-                </Button>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button>
-                      <Box css={{ mr: '$1' }}>
-                        <FileIcon />
-                      </Box>
-                      Export
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <DropdownMenuGroup>
-                      <DropdownMenuItem
-                        onClick={() => {
-                          exportElementToPng(
-                            document.getElementById('canvas'),
-                            bitmap[0].length * 20,
-                            bitmap.length * 20
-                          );
-                        }}
-                      >
-                        PNG
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => {
-                          exportElementToSvg(document.getElementById('canvas'));
-                        }}
-                      >
-                        SVG
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => {
-                          exportDataToJson({ bitmap, colorTop, colorBottom });
-                        }}
-                      >
-                        JSON
-                      </DropdownMenuItem>
-                    </DropdownMenuGroup>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </ControlGroup>
-              <ControlGroup>
-                <Button disabled>
-                  <Box css={{ mr: '$1' }}>
-                    <Share2Icon />
-                  </Box>
-                  Share
-                </Button>
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button title='About'>
-                      <Box css={{ mr: '$1' }}>
-                        <QuestionMarkCircledIcon />
-                      </Box>
-                      About
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <Flex css={{ fd: 'column', gap: '$4' }}>
-                      <Help />
-                      <Footer />
-                    </Flex>
-                  </DialogContent>
-                </Dialog>
-              </ControlGroup>
-            </Flex>
+            <Toolbar />
           </Flex>
         </Section>
       </Box>
