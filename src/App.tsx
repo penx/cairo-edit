@@ -13,7 +13,11 @@ import {
   DropdownMenuItem,
   Dialog,
   DialogTrigger,
-  DialogContent
+  DialogContent,
+  Tabs,
+  TabsList,
+  TabsContent,
+  TabsTrigger
 } from '@modulz/design-system';
 
 import {
@@ -33,6 +37,7 @@ import {
 import { ColorPicker } from './components/ColorPicker';
 import { ColorBox } from './components/ColorBox';
 import { Canvas } from './components/Canvas';
+import { Canvas3D } from './components/Canvas3D';
 import { Footer } from './components/Footer';
 import { Help } from './components/Help';
 import {
@@ -93,22 +98,41 @@ function App() {
     [writeValue]
   );
 
-  const clearWriteValue = useCallback(() => {setWriteValue(null)}, []);
+  const clearWriteValue = useCallback(() => {
+    setWriteValue(null);
+  }, []);
 
   return (
     <>
       <Box className={darkTheme.className}>
         <Section>
           <Flex direction='column' align='center' gap='6'>
-            <Canvas
-              bitmap={bitmap}
-              onPixelMouseDown={handleMouseDown}
-              onPixelMouseOver={writeValue != null ? handleMouseOver : undefined}
-              onMouseUp={clearWriteValue}
-              onMouseLeave={clearWriteValue}
-              colorTop={colorTop}
-              colorBottom={colorBottom}
-            />
+            <Tabs defaultValue='2D' >
+              <TabsList>
+                <TabsTrigger value='2D'>2D</TabsTrigger>
+                <TabsTrigger value='3D'>3D</TabsTrigger>
+              </TabsList>
+              <TabsContent value='2D'>
+                <Canvas
+                  bitmap={bitmap}
+                  onPixelMouseDown={handleMouseDown}
+                  onPixelMouseOver={
+                    writeValue != null ? handleMouseOver : undefined
+                  }
+                  onMouseUp={clearWriteValue}
+                  onMouseLeave={clearWriteValue}
+                  colorTop={colorTop}
+                  colorBottom={colorBottom}
+                />
+              </TabsContent>
+              <TabsContent value='3D'>
+                <Canvas3D
+                  bitmap={bitmap}
+                  colorTop={colorTop}
+                  colorBottom={colorBottom}
+                />
+              </TabsContent>
+            </Tabs>
             <Flex align='center' direction='column' gap='2'>
               <ControlGroup>
                 <DropdownMenu>

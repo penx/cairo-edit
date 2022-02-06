@@ -44,5 +44,7 @@ export const Canvas = ({
 const Svg = styled('svg', {
   userSelect: 'none',
   maxWidth: '90vw',
-  maxHeight: '60vh'
+  maxHeight: '60vh',
+  width: 'min(60vh, 90vw)',
+  height: 'min(60vh, 90vw)',
 });
