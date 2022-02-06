@@ -1,4 +1,4 @@
-import React, { Suspense, useState, useMemo, useCallback } from 'react';
+import React, { Suspense, useCallback } from 'react';
 import {
   styled,
   darkTheme,
@@ -35,6 +35,8 @@ import {
   FileIcon
 } from '@radix-ui/react-icons';
 
+import { useRecoilState } from 'recoil';
+
 import { ColorPicker } from './components/ColorPicker';
 import { ColorBox } from './components/ColorBox';
 import { Canvas } from './components/Canvas';
@@ -49,9 +51,12 @@ import { load, save } from './utils/local-storage';
 
 import clarus from './presets/clarus.json';
 import mac from './presets/mac.json';
-
-const DEFAULT_COLOR_TOP = '#FCB900';
-const DEFAULT_COLOR_BOTTOM = '#EB144C';
+import {
+  bitmapState,
+  colorTopState,
+  colorBottomState,
+  writeValueState
+} from './recoil/canvas/atom';
 
 const Canvas3D = React.lazy(() => import('./components/Canvas3D'));
 
@@ -63,17 +68,10 @@ const CanvasPlaceholder = styled('div', {
 });
 
 function App() {
-  const initialLoad = useMemo(() => load(), []);
-  const [bitmap, setBitmap] = useState<(0 | 1 | 2)[][]>(
-    initialLoad?.bitmap || clarus.bitmap
-  );
-  const [colorTop, setColorTop] = useState<string>(
-    initialLoad?.colorTop || DEFAULT_COLOR_TOP
-  );
-  const [colorBottom, setColorBottom] = useState<string>(
-    initialLoad?.colorBottom || DEFAULT_COLOR_BOTTOM
-  );
-  const [writeValue, setWriteValue] = useState<0 | 1 | 2 | null>(null);
+  const [bitmap, setBitmap] = useRecoilState(bitmapState);
+  const [colorTop, setColorTop] = useRecoilState(colorTopState);
+  const [colorBottom, setColorBottom] = useRecoilState(colorBottomState);
+  const [writeValue, setWriteValue] = useRecoilState(writeValueState);
 
   const handleMouseDown = useCallback((rowClicked, columnClicked) => {
     setBitmap((b) => {
@@ -123,7 +121,6 @@ function App() {
               </TabsList>
               <TabsContent value='2D'>
                 <Canvas
-                  bitmap={bitmap}
                   onPixelMouseDown={handleMouseDown}
                   onPixelMouseOver={
                     writeValue != null ? handleMouseOver : undefined
