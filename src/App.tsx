@@ -59,7 +59,7 @@ function App() {
   const [colorBottom, setColorBottom] = useState<string>(
     initialLoad?.colorBottom || DEFAULT_COLOR_BOTTOM
   );
-  const [writeValue, setWriteValue] = useState<0 | 1 | 2 | null>(0);
+  const [writeValue, setWriteValue] = useState<0 | 1 | 2 | null>(null);
 
   const handleMouseDown = useCallback((rowClicked, columnClicked) => {
     setBitmap((b) => {
