@@ -1,8 +1,17 @@
 import { styled } from '@modulz/design-system';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import {
+  useRecoilCallback,
+  useRecoilState,
+  useRecoilValue
+} from 'recoil';
 
 import { Grid } from './Grid';
-import { bitmapState, colorBottomState, colorTopState, writeValueState } from '../../recoil/canvas/atom';
+import {
+  bitmapState,
+  colorBottomState,
+  colorTopState,
+  writeValueState
+} from '../../recoil/canvas/atom';
 import { useCallback } from 'react';
 
 export const Canvas = () => {
@@ -11,21 +20,25 @@ export const Canvas = () => {
   const colorBottom = useRecoilValue(colorBottomState);
   const [writeValue, setWriteValue] = useRecoilState(writeValueState);
 
-
-  const handleMouseDown = useCallback((rowClicked, columnClicked) => {
-    setBitmap((b) => {
-      const currentValue = b[rowClicked][columnClicked];
-      const newWriteValue = ((currentValue + 1) % 3) as 0 | 1 | 2;
-      setWriteValue(newWriteValue);
-      return b.map((rowData, rowIndex) =>
-        rowClicked !== rowIndex
-          ? rowData
-          : rowData.map((columnData, columnIndex) =>
-              columnIndex === columnClicked ? newWriteValue : columnData
-            )
-      );
-    });
-  }, []);
+  const newWriteTransaction = useRecoilCallback(
+    ({ snapshot, set }) =>
+      (rowClicked: number, columnClicked: number) => {
+        const b: (0 | 1 | 2)[][] = snapshot.getLoadable(bitmapState).contents;
+        const currentValue = b[rowClicked][columnClicked];
+        const newWriteValue = ((currentValue + 1) % 3) as 0 | 1 | 2;
+        set(writeValueState, newWriteValue);
+        set(
+          bitmapState,
+          b.map((rowData, rowIndex) =>
+            rowClicked !== rowIndex
+              ? rowData
+              : rowData.map((columnData, columnIndex) =>
+                  columnIndex === columnClicked ? newWriteValue : columnData
+                )
+          )
+        );
+      }, []
+  );
 
   const handleMouseOver = useCallback(
     (rowClicked, columnClicked) => {
@@ -69,7 +82,7 @@ export const Canvas = () => {
       />
       <Grid
         bitmap={bitmap}
-        onPixelMouseDown={handleMouseDown}
+        onPixelMouseDown={newWriteTransaction}
         onPixelMouseOver={handleMouseOver}
       />
     </Svg>
