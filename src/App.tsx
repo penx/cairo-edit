@@ -13,10 +13,7 @@ import {
 import { useRecoilValue } from 'recoil';
 
 import { Canvas } from './components/Canvas';
-import {
-  colorTopState,
-  colorBottomState
-} from './recoil/canvas/atom';
+import { colorTopState, colorBottomState } from './recoil/canvas/atom';
 import { Toolbar } from './components/Toolbar';
 
 const Canvas3D = React.lazy(() => import('./components/Canvas3D'));
@@ -41,6 +38,7 @@ function App() {
               <TabsList>
                 <TabsTrigger value='2D'>2D</TabsTrigger>
                 <TabsTrigger value='3D'>3D</TabsTrigger>
+                <TabsTrigger value='2UP'>2UP</TabsTrigger>
               </TabsList>
               <TabsContent value='2D'>
                 <Canvas />
@@ -57,6 +55,22 @@ function App() {
                 >
                   <Canvas3D />
                 </Suspense>
+              </TabsContent>
+              <TabsContent value='2UP'>
+                <Flex direction='row'>
+                  <Canvas />
+                  <Suspense
+                    fallback={
+                      <CanvasPlaceholder
+                        css={{
+                          background: `linear-gradient(180deg, ${colorTop} 0%, ${colorBottom} 100%)`
+                        }}
+                      />
+                    }
+                  >
+                    <Canvas3D />
+                  </Suspense>
+                </Flex>
               </TabsContent>
             </Tabs>
             <Toolbar />
